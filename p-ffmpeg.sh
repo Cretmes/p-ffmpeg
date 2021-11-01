@@ -154,12 +154,14 @@ fi
 
 # Ready Directory
 
+normarized_3=$3
+
 declare -a already_exist=()
 
-bDirectory="$3"
+bDirectory="$normarized_3"
 if [ -d $bDirectory ]
 then
-	for tmp_exist_file in "$3/${command_ls[@]}.$2"
+	for tmp_exist_file in "$normarized_3/${command_ls[@]}.$2"
 	do
 		if [ -e $tmp_exist_file ]
 		then
@@ -167,7 +169,7 @@ then
 		fi
 	done
 else
-	mkdir $3
+	mkdir $normarized_3
 fi
 
 if [ ! "${#already_exist[@]}" == 0 ]
@@ -194,16 +196,24 @@ fi
 
 for file_name in "${command_ls[@]}"
 do
-	# echo "DEBUG : \"${file_name}.$1\" \"$3${file_name}.$2\""
-	try_path="$3/${file_name}.$2"
-	ffmpeg $default_option -i "${file_name}.$1" -acodec $selected_codec -f $selected_format $try_path 2>/dev/null
+	# echo "DEBUG : \"${file_name}.$1\" \"$normarized_3${file_name}.$2\""
 
-	if [ $? == 0 ]
-	then
-		echo "success : $try_path"
-	else
-		echo "Failed : $try_path"
-	fi
+	ffmpeg_convert()
+	{
+		try_path="$3/${file_name}.$2"
+		ffmpeg $default_option -i "${file_name}.$1" -acodec $selected_codec -f $selected_format $try_path 2>/dev/null
+
+		if [ $? == 0 ]
+		then
+			echo "success : $try_path"
+		else
+			echo "Failed : $try_path"
+		fi
+	}
+
+	ffmpeg_convert $1 $2 $normarized_3 &
+	
 done
+wait
 
 echo "Done"
