@@ -19,24 +19,24 @@ Ubuntuまたはその他Linux
 
 	以下はUbuntuの例
 	```
-	$ sudo apt install ffmpeg
+	sudo apt install ffmpeg
 	```
 	他のdistroなら自分で調べてください。yum?
 
 2. p-ffmpeg(本スクリプト)をインストール
 	1. p-ffmpegをgit cloneなどしインストール、ディレクトリに移動
 		```
-		$ cd p-ffmpeg
+		cd p-ffmpeg
 		```
 
 	2. `install.sh` の実行権限の変更
 		```
-		$ sudo chmod 555 install.sh
+		sudo chmod 555 install.sh
 		```
 
 	3. `install.sh` を管理者権限で実行
 		```
-		$ sudo ./install.sh
+		sudo ./install.sh
 		```
 	
 	インストール後はダウンロードしたファイルは削除して構いません。
@@ -45,12 +45,12 @@ Ubuntuまたはその他Linux
 
 1. 変換したいファイルがあるディレクトリに移動
 	```
-	$ cd target_dir
+	cd target_dir
 	```
 
 2. p-ffmpeg
 	```
-	$p-ffmpeg flac m4a export
+	p-ffmpeg flac m4a export
 	```
 	これでディレクトリにあるflacファイルがすべてm4aに変換されてexportディレクトリに出力されます。
 

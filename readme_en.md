@@ -18,24 +18,24 @@ Test environment is WSL Ubuntu 20.04
 
 	Example in Ubuntu
 	```
-	$ sudo apt install ffmpeg
+	sudo apt install ffmpeg
 	```
 	If another distro, google yourself. yum?
 
 2. Install p-ffmpeg(this script)
 	1. Install p-ffmpeg by "git clone" and change directory.
 		```
-		$ cd p-ffmpeg
+		cd p-ffmpeg
 		```
 
 	2. Change permision of `install.sh`
 		```
-		$ sudo chmod 555 install.sh
+		sudo chmod 555 install.sh
 		```
 
 	3. Run `install.sh` as root
 		```
-		$ sudo ./install.sh
+		sudo ./install.sh
 		```
 	
 	If you installed, you can remove the file which you downloaded.
@@ -44,12 +44,12 @@ Test environment is WSL Ubuntu 20.04
 
 1. Move direcoty which you want to convert
 	```
-	$ cd target_dir
+	cd target_dir
 	```
 
 2. p-ffmpeg
 	```
-	$p-ffmpeg flac m4a export
+	p-ffmpeg flac m4a export
 	```
 	You can get converted m4a from flac and export to "./export".
 
