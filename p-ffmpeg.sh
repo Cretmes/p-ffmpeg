@@ -35,7 +35,7 @@ arg_check()
 	then
 		case $arg_1 in
 		"-h" | "-help" )
-			echo "command : p-ffmpeg (target) (converted) [option: path]"
+			echo "command : p-ffmpeg (target) (converted) (directory to save)"
 			echo "p-ffmpeg supported extension(target)"
 			declare tmp_target_list="    "
 			for i in "${target_format[@]}"
@@ -43,7 +43,6 @@ arg_check()
 				tmp_target_list+="$i "
 			done
 			echo "$tmp_target_list"
-
 			echo "p-ffmpeg supported extension(converted)"
 			declare tmp_converted_list="    "
 			for i in "${convert_to_format[@]}"
@@ -51,12 +50,11 @@ arg_check()
 				tmp_converted_list+="$i "
 			done
 			echo "$tmp_converted_list"
-
 			exit 0
 			;;
 		esac
 	else
-		echo "command : p-ffmpeg (target) (converted) [option: path]"
+		echo "command : p-ffmpeg (target) (converted) (directory to save)"
 		exit 1
 	fi
 
@@ -96,7 +94,7 @@ flag_check()
 		;;
 	2 )
 		echo $3
-		echo "command : p-ffmpeg (target) (converted) [option: path]"
+		echo "command : p-ffmpeg (target) (converted) (directory to save)"
 		exit 1
 		;;
 	esac
@@ -112,7 +110,11 @@ flag_check $bTarget $1 "Input the target extension"
 bConvert=`check_contain "$2" "convert_to_format"`
 flag_check $bConvert $1 "Input the converted extension"
 
-# Get Current dir file
+if [ -z $3 ]
+then
+	echo "Specify directory to save."
+	exit
+fi
 
 case $2 in
 "m4a" )
@@ -141,8 +143,6 @@ case $2 in
 	;;
 esac
 
-# echo "DEBUG : $selected_codec $selected_format"
-
 declare -a command_ls=($(ls *.$1 2>/dev/null | sed 's/\.[^\.]*$//' 2>/dev/null))
 
 if [ "${#command_ls[@]}" == 0 ]
@@ -151,39 +151,28 @@ then
 	exit 1
 fi
 
-
-# Ready Directory
-
-normarized_3=$3
+normarized_3=`echo $3 | sed -e 's/^\.\?\/*//' -e 's/\/*$//'`
 
 declare -a already_exist=()
 
-bDirectory="$normarized_3"
+bDirectory="./$normarized_3"
 if [ -d $bDirectory ]
 then
-	for tmp_exist_file in "$normarized_3/${command_ls[@]}.$2"
+	for tmp_exist_file in "${command_ls[@]}"
 	do
-		if [ -e $tmp_exist_file ]
+		declare exist_file_ext="./$normarized_3/${tmp_exist_file}.$2"
+
+		if [ -e $exist_file_ext ]
 		then
-			already_exist+=("$tmp_exist_file")
+			already_exist+=("$exist_file_ext")
 		fi
 	done
 else
-	mkdir $normarized_3
-fi
-
-if [ ! "${#already_exist[@]}" == 0 ]
-then
-	echo "Some files already exist."
-	for ef in "${already_exist[@]}"
-	do
-		echo "    $ef"
-	done
-	read -p "Remove them? (y/N): " response
-
+	echo "$normarized_3 does not exist."
+	read -p "Create directory? (y/N): " response
 	case "$response" in
 	[yY]*)
-		echo "Remove"
+		mkdir $normarized_3
 		;;
 	* )
 		echo "Aborted."
@@ -192,27 +181,47 @@ then
 	esac
 fi
 
-# Converting
+if [ ${#already_exist[@]} -gt 0 ]
+then
+	echo "Some files already exist."
+	for ef in "${already_exist[@]}"
+	do
+		echo "    \"$ef\""
+	done
+	read -p "Remove them? (y/N): " response
+
+	case "$response" in
+	[yY]*)
+		text_rl=""
+		for rl in "${already_exist[@]}"
+		do
+			rm -f "$rl"
+		done
+		echo "Removed"
+		;;
+	* )
+		echo "Aborted."
+		exit
+		;;
+	esac
+fi
 
 for file_name in "${command_ls[@]}"
 do
-	# echo "DEBUG : \"${file_name}.$1\" \"$normarized_3${file_name}.$2\""
-
 	ffmpeg_convert()
 	{
-		try_path="$3/${file_name}.$2"
+		try_path="./$3/${file_name}.$2"
 		ffmpeg $default_option -i "${file_name}.$1" -acodec $selected_codec -f $selected_format $try_path 2>/dev/null
 
 		if [ $? == 0 ]
 		then
-			echo "success : $try_path"
+			echo "Success : $try_path"
 		else
 			echo "Failed : $try_path"
 		fi
 	}
 
 	ffmpeg_convert $1 $2 $normarized_3 &
-	
 done
 wait
 
