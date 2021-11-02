@@ -2,6 +2,8 @@
 
 IFS=$'\n'
 
+declare version="1.0"
+
 declare -a target_format=("wav" "flac" "wma")
 declare -a convert_to_format=("m4a" "mp3" "mwa" "aac" "wav")
 
@@ -34,7 +36,7 @@ arg_check()
 	if [ ! -z $arg_1 ]
 	then
 		case $arg_1 in
-		"-h" | "-help" )
+		"-h" | "-help" | "--h" | "--help" )
 			echo "command : p-ffmpeg (target) (converted) (directory to save)"
 			echo "p-ffmpeg supported extension(target)"
 			declare tmp_target_list="    "
@@ -50,6 +52,12 @@ arg_check()
 				tmp_converted_list+="$i "
 			done
 			echo "$tmp_converted_list"
+			exit 0
+			;;
+		"-v" | "-version" | "--v" | "--version" )
+			echo "p-ffmpeg version ${version}"
+			echo ""
+			echo "(C) 2021 Cretmes"
 			exit 0
 			;;
 		esac
